@@ -8,47 +8,7 @@
         <!-- Code for Arduino to Serialport connection -->
          <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.8/p5.min.js"></script>
          <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.4.8/addons/p5.dom.js"></script>
-         <script type="text/javascript">
-          var text;// variable for the text div you'll create
-          var socket = new WebSocket("ws://localhost:8081");
-         
-          function setup() {
-            // The socket connection needs two event listeners:
-             socket.onopen = openSocket;
-             socket.onmessage = showData;
-          }
-
-          function openSocket() {
-            text.html("Socket open");
-            socket.send("Hello server");
-            }
-           
-          function showData(result) {
-              // convert result to an integer
-              potMeter = int(result.data);
-              // send a byte to get the Arduino to send new data
-              socket.send('a');
-
-              var e = jQuery.Event("keydown");
-              if(potMeter > 500){
-                e.which = 103; // # Some key code value
-                $("input").trigger(e);
-                console.log(potMeter);
-                videos[0].show();
-                videos[1].show();
-                temOpacity -= 0.1;
-                videos[0].css("opacity",temOpacity);
-                videos[1].css("opacity",1-temOpacity);
-              }
-              else {
-                videos[0].show();
-                videos[1].show();
-                temOpacity += 0.1;
-                videos[0].css("opacity",temOpacity);
-                videos[1].css("opacity",1-temOpacity);
-              }
-            }
-         </script>
+         <script type="text/javascript" src="../js/arduinoHandler.js"></script>
 
         <link rel="stylesheet" type="text/css" href="../css/my.css">
       </head>
@@ -129,42 +89,43 @@
 
 
         function doKeyDown(e){
-
+          console.log(e);
        //for test
 
-          if (e.keyCode == 80 || e.keyCode == 112 ) // when press P
-          {
-            window.location.href='index.html';
-          }
+          // if (e.keyCode == 80 || e.keyCode == 112 ) // when press P
+          // {
+          //   window.location.href='index.html';
+          // }
 
-          if (e.keyCode == 77 || e.keyCode == 109) // when press M
-          {
-            hideAll(false);
-            Mvideos[temp].show();
-            Mvideos[temp].prop("volume",1);
-            return;
-          }
+          // if (e.keyCode == 77 || e.keyCode == 109) // when press M
+          // {
+          //   hideAll(false);
+          //   Mvideos[temp].show();
+          //   Mvideos[temp].prop("volume",1);
+          //   return;
+          // }
 
-          if (e.keyCode == 81 || e.keyCode == 113) // when press Q
-          {
-            temp = 0;
-            hideAll(true);
-          }else
-          if (e.keyCode == 87 || e.keyCode == 119) // when press W
-          {
-            temp = 1;
-            hideAll(true);
-          }else
-          if (e.keyCode == 69 || e.keyCode == 101) // when press E
-          {
-            temp = 2;
-            hideAll(true);
-          }
+          // if (e.keyCode == 81 || e.keyCode == 113) // when press Q
+          // {
+          //   temp = 0;
+          //   hideAll(true);
+          // }else
+          // if (e.keyCode == 87 || e.keyCode == 119) // when press W
+          // {
+          //   temp = 1;
+          //   hideAll(true);
+          // }else
+          // if (e.keyCode == 69 || e.keyCode == 101) // when press E
+          // {
+          //   temp = 2;
+          //   hideAll(true);
+          // }
           
 
         }
 
         function doKeyUp (e) {
+          //M
            if (e.keyCode == 77 || e.keyCode == 109)
            {
               hideAll();
