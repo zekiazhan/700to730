@@ -131,6 +131,7 @@
          // called when point of view changed
          // change the transfromation status of the video
          // (adjust the opacity)
+         // pointOfView : int range  from 0..1023
          function OnPointOfViewChange(pointOfView)
          {
          	for ( var i = 0 ; i < pointOfViewStatic.length - 1 ; ++ i )
