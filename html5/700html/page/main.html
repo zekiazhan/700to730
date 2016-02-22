@@ -11,22 +11,22 @@
       <body >
         <div class = "videoFrame" id = "mv">
           <video id="videoQ" autoplay>
-            <source src="../footage/MQ_c.mp4">
+            <source src="../footage/Q.mp4"preload='none'>
           </video>
           <video id="videoW" autoplay >
-            <source src="../footage/ME_c.mp4">
+            <source src="../footage/W.mp4" preload='none'>
           </video>
           <video id="videoE" autoplay >
-            <source src="../footage/E.mp4">
+            <source src="../footage/E.mp4" preload='none'>
           </video>
           <video id="videoMQ" autoplay >
-            <source src="../footage/MQ.mp4">
+            <source src="../footage/MQ.mp4" preload='none'>
           </video>
           <video id="videoMW" autoplay >
-            <source src="../footage/MW.mp4">
+            <source src="../footage/MW.mp4" preload='none'>
           </video>
           <video id="videoME" autoplay >
-            <source src="../footage/ME.mp4">
+            <source src="../footage/ME.mp4" preload='none'>
           </video>
         </div>
        <div id="footnote"></div>
@@ -77,6 +77,13 @@
             videos[0].css("opacity",temOpacity);
             videos[1].css("opacity",1-temOpacity);
           }
+          
+          if (e.keyCode == 104 || e.keyCode == 72 )
+          {
+            alert("ok");
+            video[0].prop("currentTime",0);
+          }
+
         }
         function doKeyDown(e){
 
