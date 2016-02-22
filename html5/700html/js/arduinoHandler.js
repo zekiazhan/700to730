@@ -26,7 +26,7 @@
               //3rd camera for audio
               audioView = int(resArray[2]);
               // send a byte to get the Arduino to send new data
-              socket.send('700 to 730');
+              socket.send('700to730');
 
               // doKeyDown(pointOfView); //for testing
             }
