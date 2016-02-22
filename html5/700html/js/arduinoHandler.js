@@ -19,12 +19,14 @@
               //all variable range is form 0-1023
               //1st knob - G
               pointOfView = int(resArray[0]);
+              OnPointOfViewChange(pointOfView);
               //2nd camera - W
               realityView = int(resArray[1]);
+              OnRealityViewChange(realityView);
               //3rd camera for audio
               audioView = int(resArray[2]);
               // send a byte to get the Arduino to send new data
-              socket.send('700 to 730');
+              socket.send('700to730');
 
               // doKeyDown(pointOfView); //for testing
             }

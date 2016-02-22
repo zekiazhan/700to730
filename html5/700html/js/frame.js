@@ -1,5 +1,3 @@
-(function (window) {
-	'use strict';
 
 	var document = window.document;
 	var footageFloder = "../footage"
@@ -351,5 +349,3 @@
     // window.addEventListener('keyup',this.doKeyUp,false);
 
 	init();
-
-})(window);
