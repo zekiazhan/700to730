@@ -162,7 +162,6 @@
         if (tempPoint != null)
             console.log(tempPoint.myId);
     }
->>>>>>> update the new video play mechanism
 
     function importVideoFromSource(sourceInfo)
     {
