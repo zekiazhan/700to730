@@ -1,0 +1,311 @@
+<!doctype html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+   <html>
+      <head>
+        <!-- <title>Demo &raquo; Resize &raquo; gridster.js</title> -->
+        <link rel="stylesheet" type="text/css" href="../css/my.css">
+      </head>
+
+
+      <body >
+        <div class = "videoFrame" id = "mv">
+          <video id="default" autoplay >
+            <source src="../footage/0_PressQ_Opening_55s.mp4">
+          </video>
+          <video id="videoQ" >
+            <source src="../footage/1_PressW_Opening_18s.mp4">
+          </video>
+          <video id="videoW" >
+            <source src="../footage/2_PressE_Opening_8s.mp4">
+          </video>
+          <video id="videoE" >
+            <source src="../footage/3_HoldM_UnderE_54s.mp4">
+          </video>
+          <video id="videoMQ" >
+            <source src="../footage/4_ThatsAll_withQ_58s.mp4">
+          </video>
+          <video id="videoMW" >
+            <source src="../footage/4_ThatsAll_withQ_58s.mp4">
+          </video>
+          <video id="videoME" >
+            <source src="../footage/4_ThatsAll_withQ_58s.mp4">
+          </video>
+
+          <audio id="audio1" autoplay preload="none">
+            <source src= "../sound/intro_full.mp3" >
+          </audio>
+           <audio id="audio1Loop" loop >
+            <source src= "../sound/loop.mp3" >
+          </audio>
+
+          <audio id="audio2" preload="none">
+            <source src= "../sound/01.CelticHarp.1stRun.wav">
+          </audio>
+           <audio id="audio2Loop" loop >
+            <source src= "../sound/Habanera.loop.02.CelticHarp.d.wav">
+          </audio>
+
+          <audio id="audio3" preload="none">
+            <source src= "../sound/01.Harmonica.1stRun.wav" >
+          </audio>
+           <audio id="audio3Loop" loop >
+            <source src= "../sound/Habanera.loop.03.Harmonica.d.wav" >
+          </audio>
+
+        </div>
+       <div id="footnote"></div>
+
+        <script src="http://popcornjs.org/code/dist/popcorn-complete.min.js"></script>
+        <script src="../libs/jquery/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript">
+
+        var temp; //temp state of QWE
+        var state = 0; // state of tutorial
+                       // 0 : opening - press Q
+                       // 1 : press W
+                       // 2 : press E
+                       // 3 : press M
+                       // 4 : end
+
+        var videos = new Array(3);
+        videos[0] = $("#videoQ");
+        videos[1] = $("#videoW");
+        videos[2] = $("#videoE");
+
+        var Mvideos = new Array(3);
+        Mvideos[0] = $("#videoMQ");
+        Mvideos[1] = $("#videoMW");
+        Mvideos[2] = $("#videoME");
+
+        var audiosIntro = new Array(3);
+        audiosIntro[0] = $("#audio1");
+        audiosIntro[1] = $("#audio2");
+        audiosIntro[2] = $("#audio3");
+
+        var audiosLoop = new Array(3);
+        audiosLoop[0] = $("#audio1Loop");
+        audiosLoop[1] = $("#audio2Loop");
+        audiosLoop[2] = $("#audio3Loop");
+
+        var i = document.getElementById("default");
+
+        // go full-screen
+        if (i.requestFullscreen) {
+          i.requestFullscreen();
+        } else if (i.webkitRequestFullscreen) {
+          i.webkitRequestFullscreen();
+        } else if (i.mozRequestFullScreen) {
+          i.mozRequestFullScreen();
+        } else if (i.msRequestFullscreen) {
+          i.msRequestFullscreen();
+        }   
+
+        // var loopPathQ = "../footage/0_PressQ_Loop_21s.mp4";
+        // var loopPathW = "../footage/1_PressW_Loop_40s.mp4";
+        // var loopPathE = "../footage/2_PressE_Loop_9s.mp4";
+
+
+        var loopPath = new Array(   "../footage/1_PressW_Loop_40s.mp4" , 
+                                    "../footage/2_PressE_Loop_9s.mp4" ,
+                                    "../footage/0_PressQ_Loop_21s.mp4" );
+
+
+
+        var loopPathDef =  "../footage/0_PressQ_Loop_21s.mp4";
+
+        var MvideoPath = new Array( "../footage/3_HoldM_UnderQ_33s.mp4" , 
+                                    "../footage/3_HoldM_UnderW_46s.mp4" ,
+                                    "../footage/3_HoldM_UnderE_54s.mp4" );
+
+        // alert("init ok");
+        // var def =  Popcorn( "#default" );
+        var def = $("#default");
+
+        window.addEventListener('keydown',this.doKeyDown,false);
+        window.addEventListener('keyup',this.doKeyUp,false);
+
+        // window.setTimeout( function() {
+        //     audiosIntro[2][0].play();
+        // }, 1000);
+
+        // window.setTimeout( function() {
+        //     audiosIntro[2][0].play();
+        // }, 1000);
+
+        // var path = (state < 3 )? loopPath[0]:MvideoPath[0];
+
+        // init the loop
+        def[0].addEventListener('ended', function(e){
+            var path = loopPathDef;
+            this.src = path;
+            this.load();
+            this.play();
+        }, false);
+
+        videos[0][0].addEventListener('ended', function(e){
+            var path = (state != 3 )? loopPath[0]:MvideoPath[0];
+            this.src = path;
+            this.load();
+            this.play();
+        }, false);
+
+        videos[1][0].addEventListener('ended', function(e){
+            var path = (state != 3 )? loopPath[1]:MvideoPath[1];
+            this.src = path;
+            this.load();
+            this.play();
+        }, false);
+
+        videos[2][0].addEventListener('ended', function(e){
+            var path = (state != 3 )? loopPath[2]:MvideoPath[2];
+            this.src = path;
+            this.load();
+            this.play();
+        }, false);
+
+
+        Mvideos[0][0].addEventListener('ended', function(e){
+          for (var i = audiosIntro.length - 1; i >= 0; i--) {
+            audiosIntro[i].animate({volume:0}, 2000);
+          };
+          for (var i = audiosLoop.length - 1; i >= 0; i--) {
+            audiosLoop[i].animate({volume:0}, 2000);
+          };
+
+          setTimeout( function() {
+            window.location.href='main.html';
+          }, 2000);
+        }, false);
+
+        audiosIntro[0][0].addEventListener('ended', function(e){
+            audiosLoop[0].get(0).play();
+        },false);
+
+        hideAll();
+        def.show();
+
+        audiosIntro[0].animate({volume:1}, 5000);
+        audiosLoop[0].animate({volume:1}, 5000);
+        audiosIntro[0][0].play();
+
+        function doKeyDown(e){
+
+          if (e.keyCode == 80 || e.keyCode == 112 ) // when press P
+          {
+            window.location.href='index.html';
+          }
+
+          switch(state) {
+            case 0:
+              if (e.keyCode == 81 || e.keyCode == 113) // when press Q
+              {
+                state = 1;
+              }
+              break;
+            case 1:
+              if (e.keyCode == 87 || e.keyCode == 119) // when press W
+              {
+                state = 2;
+              }
+              break;
+            case 2:
+              if (e.keyCode == 69 || e.keyCode == 101) // when press E
+              {
+                for (var i = videos.length - 1; i >= 0; i--) {
+                  // videos[i].attr("src" , MvideoPath[i]);
+                  videos[i][0].src = MvideoPath[i];
+                  videos[i][0].load();
+                  videos[i][0].play();
+                };
+                state = 3;
+
+                // audiosIntro[1].animate({volume:1}, 5000);
+                // audiosLoop[1].animate({volume:1}, 5000);
+              }
+              break;
+            case 3:
+              if (e.keyCode == 77 || e.keyCode == 109) // when press M
+              {
+                {
+                  state = 4;
+                  for (var i = videos.length - 1; i >= 0; i--) {
+                    // videos[i].attr("src" , MvideoPath[i]);
+                    videos[i][0].src = loopPath[i];
+                    videos[i][0].load();
+                    videos[i][0].play();
+                  };
+
+                  // audiosIntro[2].animate({volume:1}, 5000);
+                  // audiosLoop[2].animate({volume:1}, 5000);
+                }
+              }
+              break;
+
+            case 4:
+
+              break;
+            default:
+              break;
+          }
+
+          if (e.keyCode == 81 || e.keyCode == 113 ) // when press Q
+          {
+            temp = 0;
+            hideAll(true);
+          }
+          if ((e.keyCode == 87 || e.keyCode == 119) && state > 0) // when press W
+          {
+            temp = 1;
+            hideAll(true);
+          }
+          if ((e.keyCode == 69 || e.keyCode == 101 ) && state > 1) // when press E
+          {
+            temp = 2;
+            hideAll(true);
+          }
+
+          if ((e.keyCode == 77 || e.keyCode == 109) && state > 2) // when press M
+          {
+            hideAll(false);
+            Mvideos[0].show();
+            if (Mvideos[0][0].paused)
+            {
+              Mvideos[0][0].play();
+            }
+            return;
+          }
+          
+        }
+
+        function doKeyUp (e) {
+           if (e.keyCode == 77 || e.keyCode == 109)
+           {
+              hideAll();
+              videos[temp].show();
+              // if (temp == "Q")
+
+           }
+        }
+
+        function hideAll(isShowtemp) {
+          for (var i = videos.length - 1; i >= 0; i--) {
+            videos[i].hide();
+          };
+          for (var i = Mvideos.length - 1; i >= 0; i--) {
+            Mvideos[i].hide();
+          };
+
+          def.hide();
+
+          if (isShowtemp)
+          {
+            videos[temp].show();
+            if (videos[temp].get(0).paused)
+               videos[temp].get(0).play();
+          }
+        }
+
+        </script>
+
+     </body>
+   </html>
