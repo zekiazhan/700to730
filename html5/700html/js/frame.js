@@ -1,27 +1,28 @@
 
     var footageFloder = "footage";
-    var videoSources = [
-        ['Q',0,0,0],
-        ['W',0,1,0],
-        ['E',0,2,0],
-        ['MQ',1,0,0],
-        ['MW',1,1,0],
-        ['ME',1,2,0],
-    ]
     var vSourceIndex = 0 ;
     var flickerSource = "flicker_3s";
     var videoType = "video/mp4";
+    var videoSuffix = ".mp4";
 
+    // var videoSources = [
+    //     ['Q',0,0,0],
+    //     ['W',0,1,0],
+    //     ['E',0,2,0],
+    //     ['MQ',1,0,0],
+    //     ['MW',1,1,0],
+    //     ['ME',1,2,0],
+    // ]
     var VIDEO_NAME = 0;
     var VIDEO_BUTTON_NUM = 1;
     var VIDEO_SCALE_NUM = 2;
     var VIDEO_START_TIME = 3;
 
-    var ButtonConstruct = [
-        [128,512,900],
-        [100,500,1000],
-        [200,300,700,900]
-    ]
+    // var ButtonConstruct = [
+    //     [128,512,900],
+    //     [100,500,1000],
+    //     [200,300,700,900]
+    // ]
 
     var keypressButtonChange = 20;
     var clearRange = 0.3;
@@ -51,7 +52,7 @@
     var buttons;
 
     function video2path (videoName) {
-        return "../" + footageFloder + "/" + videoName + ".mp4";
+        return "../" + footageFloder + "/" + videoName + videoSuffix;
     }
 
     function init () {
@@ -171,7 +172,6 @@
         var video = buttons[Ibtn].pointList[Jscl].video;
         video.attr('src',path);
         // video.play();
-
     }
 
     function hideVideo(p)
