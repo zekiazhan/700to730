@@ -6,22 +6,21 @@
     var videoSuffix = ".mp4";
 
     var videoSources = [
-        ['Q',0,0,0],
-        ['W',0,1,0],
-        ['E',0,2,0],
-        ['MQ',1,0,0],
-        ['MW',1,1,0],
-        ['ME',1,2,0],
+        ['Q',0,0,0,20],
+        ['2s',0,1,0,15],
+        ['MQ',0,1,0,15],
+        ['MW',0,1,15,30],
+        ['ME',0,1,15,30],
     ]
+
     var VIDEO_NAME = 0;
     var VIDEO_BUTTON_NUM = 1;
     var VIDEO_SCALE_NUM = 2;
     var VIDEO_START_TIME = 3;
+    var VIDEO_END_TIME = 4;
 
     var ButtonConstruct = [
-        [128,512,900],
-        [100,500,1000],
-        [200,300,700,900]
+        [128,512,900]
     ]
 
     var keypressButtonChange = 20;
@@ -34,9 +33,23 @@
          var point = {};
          point.val = _val;
          point.video = _video;
+         point.videoList = [];
          point.myId = _id;
-         return point;
+
+         point.EnterPoint = function() {
+     	var path = "";
+     	if (this.videoList.length > 0 ) {
+     		var rand = Math.floor(Math.random()*this.videoList.length);
+     		console.log("Random " + rand.toString() );
+     		path = this.videoList[rand];
+     	}
+     	console.log("Enter Point path " + this.myId + " " + path);
+     	this.video.attr('src',path);
+        }
+        
+        return point;
      }
+
     };
 
     var MyButton = {
@@ -92,6 +105,7 @@
                 video.type = videoType;
                 video.src = "";
                 video.preload = 'none';
+                video.loop = true;
                 video.id = 'video-'+i.toString()+'-'+j.toString();
                 video.autoplay = true;
                 videoFrame.appendChild(video);
@@ -118,11 +132,18 @@
     var noiseOpacity = 1;
     var tempPoint = null;
     var currentTime = 0 ;
+    var lastPoint;
     function update()
     {
         // update noise
         var p = getClearPoint(buttonTempValue[tempButton],buttons[tempButton].pointList);
         
+        if ( p != null && ( lastPoint == null || p.myId != lastPoint.myId))
+        {
+        	p.EnterPoint();
+        }
+        lastPoint = p;
+
         if (p == null ) // video not found
         {
             noiseOpacity += noiseOpacityChange;
@@ -153,15 +174,47 @@
 
         // update videos
         currentTime += 1000 / FPS;
+
+        // remove videos
+	    for (var i = videoSources.length - 1; i >= 0; i--) {
+	    	if ( videoSources[i][VIDEO_END_TIME] >= currentTime / 1000 
+	    		&& videoSources[i][VIDEO_END_TIME] < currentTime / 1000 + 1 / FPS)
+	    		removeVideoBySource(videoSources[i]);
+	    };
+
+	    // add videos
+	   	// for (var i = videoSources.length - 1; i >= 0; i--) {
+	    // 	if ( videoSources[i][VIDEO_START_TIME] >= currentTime 
+	    // 		&& videoSources[i][VIDEO_START_TIME] < currentTime + 1000 / FPS)
+	    // 		importVideoFromSource(videoSources[i]);
+	    // };
         if ( videoSources.length > vSourceIndex)
-        if ( currentTime > videoSources[vSourceIndex][VIDEO_START_TIME])
+        if ( currentTime / 1000 > videoSources[vSourceIndex][VIDEO_START_TIME])
         {
             importVideoFromSource(videoSources[vSourceIndex]);
             vSourceIndex++;
         }
-        console.log(buttonTempValue + " " + tempButton.toString() + " " + noiseOpacity.toString());
-        if (tempPoint != null)
-            console.log(tempPoint.myId);
+       //  console.log(buttonTempValue + " " + tempButton.toString() + " " + noiseOpacity.toString());
+        // if (tempPoint != null)
+        //     console.log(tempPoint.myId);
+    }
+
+    function removeVideoBySource(sourceInfo)
+    {
+        var path = video2path(sourceInfo[VIDEO_NAME]);
+        var Ibtn = sourceInfo[VIDEO_BUTTON_NUM];
+        var Jscl = sourceInfo[VIDEO_SCALE_NUM];
+
+        var point = buttons[Ibtn].pointList[Jscl];
+
+        var i = point.videoList.indexOf(path);
+        if ( i != -1) {
+        	point.videoList.splice(i,1);
+        }
+
+       	point.videoList.push(path);
+       	console.log("remove video " + point.myId + path);
+
     }
 
     function importVideoFromSource(sourceInfo)
@@ -169,8 +222,12 @@
         var path = video2path(sourceInfo[VIDEO_NAME]);
         var Ibtn = sourceInfo[VIDEO_BUTTON_NUM];
         var Jscl = sourceInfo[VIDEO_SCALE_NUM];
-        var video = buttons[Ibtn].pointList[Jscl].video;
-        video.attr('src',path);
+
+        var point = buttons[Ibtn].pointList[Jscl];
+       	point.videoList.push(path);
+       	console.log("import video " + point.myId + path);
+        // var video = buttons[Ibtn].pointList[Jscl].video;
+        // video.attr('src',path);
         // video.play();
     }
 
