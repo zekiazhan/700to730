@@ -5,6 +5,17 @@
     var videoType = "video/mp4";
     var videoSuffix = ".mp4";
 
+    var footagePaths = [
+        [0,'01',0,20],
+        [0,'02',20,40],
+
+    ]
+
+    var FOOTAGE_ID = 0;
+    var FOOTAGE_PATH = 1;
+    var FOOTAGE_START_TIME = 2;
+    var FOOTAGE_END_TIME = 3;
+
     var videoSources = [
         ['Q',0,0,0,20],
         ['2s',0,1,0,15],
@@ -20,13 +31,20 @@
     var VIDEO_END_TIME = 4;
 
     var ButtonConstruct = [
-        [128,512,900]
+        [128,200,225,512,900]
+    ]
+    var ButtonNoisePoint = [
+        [1,2]
     ]
 
-    var keypressButtonChange = 20;
-    var clearRange = 0.3;
+    var keypressButtonChange = 10;
+    var clearRange = 0.2;
+    var fadeRange = 0.4;
+    var noiseChangeRate = 0.2;
     var noiseOpacityChange = 0.02;
     var FPS = 30;
+
+    
 
     var Point = {
      createNew : function(_val , _video , _id ) {
@@ -35,6 +53,7 @@
          point.video = _video;
          point.videoList = [];
          point.myId = _id;
+         point.myType = "normal"
 
          point.EnterPoint = function() {
      	var path = "";
@@ -118,12 +137,55 @@
                 // append the point to point list
                 pl[pl.length]=p;
             }
+
+            for (var j = 0 ; j < ButtonNoisePoint[i].length ; j++)
+            {
+                pl[ButtonNoisePoint[i][j]].myType = "noise";
+            }
         };
+
+        //init the video
+        // TODO 
+        // initVideos();
 
 
          setInterval(function() {
             update();
         }, 1000/FPS );
+    }
+
+    function initVideos()
+    {
+        var overallPath = window.location.href;
+        var lastIndex = overallPath.length-1;
+        lastIndex = overallPath.lastIndexOf("/",lastIndex-1);
+        lastIndex = overallPath.lastIndexOf("/",lastIndex-1);
+        var path = overallPath.substr(0,lastIndex+1) + footageFloder+ '/';
+        console.log(path);
+
+        // var fso = new ActiveXObject("Scripting.FileSystemObject");  
+        
+
+        var sourceFolder = Folder("/Users/atwood/tem/700/html5/700html/page/");
+        // if (sourceFolder != null)
+        // {
+        //     var fileList = sourceFolder.getFiles();
+        //     for (var i = fileList.length - 1; i >= 0; i--) {
+        //         console.log(fileList[i]);
+        //     };
+        // }
+
+        // var fs = require('fs');
+        // var logFiles = getFiles(path);
+
+        // console.log( getFiles(logFiles) );
+
+    }
+
+    function getFiles(srcpath) {
+    return fs.readdirSync(srcpath).filter(function(file) {
+        return fs.statSync(path.join(srcpath, file)).isFile();
+    });
     }
 
     // temp button value; for test
@@ -144,27 +206,45 @@
         }
         lastPoint = p;
 
+        // change the noise filter by time
+        // if (p == null ) // video not found
+        // {
+        //     noiseOpacity += noiseOpacityChange;
+        // }else // video found
+        // {
+        //     if (noiseOpacity >= 1 ) // now noise
+        //     {
+        //         if (tempPoint != null)
+        //             hideVideo(tempPoint);
+        //         showVideo(p);
+        //         tempPoint = p;
+        //         noiseOpacity -= noiseOpacityChange;
+        //     }else  // now shows video
+        //     {
+        //         if (tempPoint.myId == p.myId) // the same video
+        //         {
+        //             noiseOpacity -= noiseOpacityChange;
+        //         }else
+        //         {
+        //             noiseOpacity += noiseOpacity;
+        //         }
+        //     }
+        // }
+
+        // change the noise filter by scale
         if (p == null ) // video not found
         {
-            noiseOpacity += noiseOpacityChange;
+            noiseOpacity = 1;
         }else // video found
         {
-            if (noiseOpacity >= 1 ) // now noise
+            noiseOpacity = 1 - getClearness(buttonTempValue[tempButton],buttons[tempButton].pointList);
+            console.log("noise opacity " + noiseOpacity);
+            if ( tempPoint != p )
             {
-                if (tempPoint != null)
+                if ( tempPoint != null )
                     hideVideo(tempPoint);
                 showVideo(p);
                 tempPoint = p;
-                noiseOpacity -= noiseOpacityChange;
-            }else  // now shows video
-            {
-                if (tempPoint.myId == p.myId) // the same video
-                {
-                    noiseOpacity -= noiseOpacityChange;
-                }else
-                {
-                    noiseOpacity += noiseOpacity;
-                }
             }
         }
 
@@ -244,6 +324,41 @@
     function getClearPoint(value,pointList)
     {
         for (var i = 0; i < pointList.length; i++ ) {
+            var _fadeRange = fadeRange;
+            if ( pointList[i].myType == "noise") {
+                _fadeRange = _fadeRange * noiseChangeRate;
+            }
+            // check previous range
+            var preVal = 0 ;
+            if (i != 0 )
+                preVal = pointList[i-1].val;
+            var preI = pointList[i].val - preVal;
+            // check forward range
+            var forVal = 1023;
+            if (i != pointList.length-1)
+                forVal = pointList[i+1].val;
+            var forI = forVal - pointList[i].val;
+
+            // check if the value in the range
+            if ( value > ( pointList[i].val - preI * _fadeRange ) && 
+                value < ( pointList[i].val + forI * _fadeRange ) )
+            {
+                return pointList[i];
+            }
+        };
+        return null;
+    }
+
+    function getClearness( value , pointList)
+    {
+        for (var i = 0; i < pointList.length; i++ ) {
+            var _fadeRange = fadeRange;
+            var _clearRange = clearRange;
+            if ( pointList[i].myType == "noise") {
+                _fadeRange = _fadeRange * noiseChangeRate;
+                _clearRange = _clearRange * noiseChangeRate;
+            }
+
             // check forword
             var preVal = 0 ;
             if (i != 0 )
@@ -253,13 +368,25 @@
             if (i != pointList.length-1)
                 forVal = pointList[i+1].val;
             var forI = forVal - pointList[i].val;
-            if ( value > ( pointList[i].val - preI * clearRange) && 
-                value < (pointList[i].val + forI * clearRange) )
+            if ( value > ( pointList[i].val - preI * _clearRange) && 
+                value < (pointList[i].val + forI * _clearRange) )
             {
-                return pointList[i];
+                return 1;
+            }
+
+            if ( value > ( pointList[i].val - preI * _fadeRange ) && 
+                value < ( pointList[i].val - preI * _clearRange ) )
+            {
+               return 1.0 * ( value - ( pointList[i].val - preI * _fadeRange ) ) / ( preI * ( _fadeRange - _clearRange) ) ;
+            }
+
+            if ( value > ( pointList[i].val + forI * _clearRange ) && 
+                value < ( pointList[i].val + forI * _fadeRange ) )
+            {
+                return 1 - 1.0 * ( value - ( pointList[i].val + forI * _clearRange ) ) / ( forI * ( _fadeRange - _clearRange) ) ;
             }
         };
-        return null;
+        return 0;
     }
 
 
@@ -300,6 +427,8 @@
             buttonTempValue[2] -= keypressButtonChange;
             tempButton = 2;
           }
+
+          console.log("Tem button " + buttonTempValue[tempButton]);
     }
 
     init();
