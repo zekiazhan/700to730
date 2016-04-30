@@ -245,7 +245,7 @@
         vFlicker.volume = noiseOpacity;
         if ( tempPoint != null )
         {
-            tempPoint.video[0].volume = 1 - noiseOpacity;
+            //tempPoint.video[0].volume = 1 - noiseOpacity;
         }
 
         // update videos
@@ -311,14 +311,14 @@
     {
         // p.video.hide();
         p.video.css("opacity",0);
-        p.video[0].volume = 0;
+        /// p.video[0].volume = 0;
     }
 
     function showVideo(p)
     {
         // p.video.show();
         p.video.css("opacity",1);
-        p.video[0].volume = 1;
+        // p.video[0].volume = 1;
     }
 
     function getClearPoint(value,pointList)
