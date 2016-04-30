@@ -1,7 +1,7 @@
 
     var footageFloder = "footage";
     var vSourceIndex = 0 ;
-    var flickerSource = "flicker_3s";
+    var flickerSource = "NoiseIII";
     var videoType = "video/mp4";
     var videoSuffix = ".mp4";
 
@@ -46,18 +46,21 @@
 
     var MainVideoPaths = 
     [
-        "../footage/LongShots.mp4",
-        "../footage/LongShots2.mp4"
+        "../footage/01.mp4",
+        "../footage/02.mp4"
     ]
     var mainVideoScale = 30 / 19;
 
     var MainVideoFliter =
     [
-        [0,10],
+        [0,5],
         [30,40],
         [66,77],
         [99,111],
     ]
+
+    // var outOfControlTime = 10;
+    // var isOutOfControl = 0;
 
     var keypressButtonChange = 10;
     var clearRange = 0.2;
@@ -273,6 +276,19 @@
        //  console.log(buttonTempValue + " " + tempButton.toString() + " " + noiseOpacity.toString());
         // if (tempPoint != null)
         //     console.log(tempPoint.myId);
+
+
+        // ****** out of control ******
+        // if ( currentTime > outOfControlTime && !isOutOfControl )
+        // {
+        // 	for (var i = buttons[0].pointList.length - 1; i >= 0; i--) {
+        // 		if ( buttons[0].pointList[i].myType == "main" )
+        // 		{
+        // 			buttons[0].pointList[i].EnterPoint();
+        // 		}
+        // 	}
+        // 	isOutOfControl = 1;
+        // }
     }
 
     function removeVideoBySource(sourceInfo)
