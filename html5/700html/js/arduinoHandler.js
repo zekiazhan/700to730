@@ -20,6 +20,8 @@
               //1st knob - G
               var btnValue = int(resArray[0]);
               UpdateButtonValue(btnValue);
+              var volValue = float(resArray[0] / 1024);
+              UpdateVolumeValue(volValue);
               //2nd camera - W
               // realityView = int(resArray[1]););
               // //3rd camera for audio

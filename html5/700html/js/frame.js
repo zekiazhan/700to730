@@ -63,6 +63,9 @@
     var clearRangeMax = 0.4999
     var clearRangeChangeTime = 8 * 60
 
+    ///// volume //////
+    var maxVolum = 0.5
+
     var keypressButtonChange = 20;
     var clearRange = 0.2;
     var fadeRange = 0.5;
@@ -246,10 +249,11 @@
         if ( noiseOpacity < 0 ) noiseOpacity = 0;
         if ( noiseOpacity > 1 ) noiseOpacity = 1;
         vFlicker.css("opacity",noiseOpacity);
-        vFlicker.volume = noiseOpacity;
+        vFlicker[0].volume = noiseOpacity * maxVolum;
+
         if ( tempPoint != null )
         {
-            //tempPoint.video[0].volume = 1 - noiseOpacity;
+            tempPoint.video[0].volume = maxVolum;
         }
 
         // update videos
@@ -400,7 +404,8 @@
     function doKeyPress(e){
           if (e.keyCode == 'w'.charCodeAt(0) )
           {
-            buttonTempValue[0] += keypressButtonChange;
+            if ( buttonTempValue[0] < 1023)
+                buttonTempValue[0] += keypressButtonChange;
             tempButton = 0;
           }
 
@@ -408,31 +413,36 @@
           if (e.keyCode == 'e'.charCodeAt(0) )
           {
             buttonTempValue[1] += keypressButtonChange;
-            tempButton = 1;
+            if ( maxVolum < 0.99)
+                maxVolum += 0.1;
+            // tempButton = 1;
           }
 
           if (e.keyCode == 'r'.charCodeAt(0) )
           {
             buttonTempValue[2] += keypressButtonChange;
-            tempButton = 2;
+            // tempButton = 2;
           }
 
           if (e.keyCode == 's'.charCodeAt(0) )
           {
-            buttonTempValue[0] -= keypressButtonChange;
+            if ( buttonTempValue[0] > 1)    
+                buttonTempValue[0] -= keypressButtonChange;
             tempButton = 0;
           }
 
           if (e.keyCode == 'd'.charCodeAt(0) )
           {
             buttonTempValue[1] -= keypressButtonChange;
-            tempButton = 1;
+            if ( maxVolum > 0.01)
+                maxVolum -= 0.1;
+            // tempButton = 1;
           }
 
           if (e.keyCode == 'f'.charCodeAt(0) )
           {
             buttonTempValue[2] -= keypressButtonChange;
-            tempButton = 2;
+            // tempButton = 2;
           }
 
           if (e.keyCode == 'k'.charCodeAt(0) )
@@ -449,6 +459,10 @@
 
     function UpdateButtonValue (btnValue) {
        buttonTempValue[0] = btnValue;
+    }
+
+    function UpdateVolumeValue (volValue) {
+       maxVolum = volValue;
     }
 
     init();

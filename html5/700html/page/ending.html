@@ -10,16 +10,16 @@
 
       <body >
         <div class = "videoFrame" id = "mv">
-          <video id="begin" autoplay >
-            <source src="../footage/Ending.mp4">
+          <video id="video" autoplay >
+            <source src="../footage/07_5s_Kitchen.mp4">
           </video>
         </div>
-        <script src="http://popcornjs.org/code/dist/popcorn-complete.min.js"></script>
         <script type="text/javascript">
 
-          var begin = $("#begin");
+          var video = $("#video");
 
-          begin[0].addEventListener('ended', function(e){
+          video[0].addEventListener('ended', function(e){
+             window.location.href='index.html';
         }, false);
 
         </script>
