@@ -1,3 +1,4 @@
+//#include "Timer.h"
 /*
   AnalogReadSerial
   Reads an analog input on pin 0, prints the result to the serial monitor.
@@ -6,10 +7,11 @@
 
   This example code is in the public domain.
 */
-
-const int ledCount = 1;    // the number of LEDs in the bar graph
+//Timer t;
+const int analogPin = A0;
+const int ledCount = 10;    // the number of LEDs in the bar graph
 int ledPins[] = {
-  13
+  4,5,6,7,8,9,10,11,12,13
 };   // an array of pin numbers to which LEDs are attached
 
 // the setup routine runs once when you press reset:
@@ -18,17 +20,20 @@ void setup() {
   for (int thisLed = 0; thisLed < ledCount; thisLed++) {
     pinMode(ledPins[thisLed], OUTPUT);
   }
+ // t.pulse(pin, 10 * 60 * 1000, HIGH); // 10 minutes  
   // initialize serial communication at 9600 bits per second:
   Serial.begin(9600);
 }
 
 // the loop routine runs over and over again forever:
 void loop() {
+  // t.update();
+  int sensorReading = analogRead(analogPin);
   // read the input on analog pin 0:
   int sensorValueA = analogRead(A0);
   int sensorValueB = analogRead(A1);
 //  int sensorValueC = analogRead(A2);
- LedController(sensorValueA);
+ LedController(sensorReading);
  SerialController(sensorValueA, sensorValueB);
   
 }
