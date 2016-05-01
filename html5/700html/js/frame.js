@@ -1,4 +1,3 @@
-
     var footageFloder = "footage";
     var vSourceIndex = 0 ;
     var flickerSource = "flicker_3s";
@@ -59,7 +58,12 @@
         [99,111],
     ]
 
-    var keypressButtonChange = 10;
+    ///// clearRange //////
+    var clearRangeMin = 0.1
+    var clearRangeMax = 0.4999
+    var clearRangeChangeTime = 8 * 60
+
+    var keypressButtonChange = 20;
     var clearRange = 0.2;
     var fadeRange = 0.5;
     var noiseChangeRate = 0.33;
@@ -273,6 +277,9 @@
        //  console.log(buttonTempValue + " " + tempButton.toString() + " " + noiseOpacity.toString());
         // if (tempPoint != null)
         //     console.log(tempPoint.myId);
+
+        // update clear range
+        clearRange = clearRangeMin +  ( currentTime / clearRangeChangeTime / 1000 ) * (clearRangeMax - clearRangeMin);
     }
 
     function removeVideoBySource(sourceInfo)
@@ -428,7 +435,17 @@
             tempButton = 2;
           }
 
+          if (e.keyCode == 'k'.charCodeAt(0) )
+          {
+          	if ( clearRange < 0.4 )
+	          	clearRange = 0.499
+	        else 
+	        	clearRange = 0.2
+          }
+
     }
+
+
 
     function UpdateButtonValue (btnValue) {
        buttonTempValue[0] = btnValue;
