@@ -7,7 +7,7 @@
           }
 
           function openSocket() {
-            text.html("Socket open");
+            // text.html("Socket open");
             socket.send("Hello server");
           }
 
