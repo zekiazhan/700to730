@@ -4,7 +4,6 @@
             // The socket connection needs two event listeners:
              socket.onopen = openSocket;
              socket.onmessage = showData;
-             socket.send('Y');
           }
 
           function openSocket() {
