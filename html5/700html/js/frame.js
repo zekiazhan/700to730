@@ -1,7 +1,7 @@
     var footageFloder = "footage";
     var vSourceIndex = 0 ;
     var flickerSource = "NoiseIII";
-    var videoType = "video/mp4";
+    var videoType = "mp4";
     var videoSuffix = ".mp4";
 
     // var footagePaths = [
@@ -33,22 +33,24 @@
 
     // the scale of the videos 
     var ButtonConstruct = [
-        [128,512,999]
+        [300,750]
     ]
 
-    var ButtonNoisePoint = [
-        [2]
-    ]
+    // var ButtonNoisePoint = [
+    //     [2]
+    // ]
     var ButtonMainPoint = [
         [0]
     ]
 
     var MainVideoPaths = 
     [
-        "../footage/01.mp4",
-        "../footage/02.mp4"
+        "../footage/AK.mp4",
+        "../footage/Z.mp4" 
     ]
-    var mainVideoScale = 30 / 19;
+    var outPath = "../footage/OOC.mp4";
+
+    var mainVideoScale = 30 / 19;// play time vs video time
 
     var MainVideoFliter =
     [
@@ -59,12 +61,15 @@
     ]
 
     ///// clearRange //////
-    var clearRangeMin = 0.1
-    var clearRangeMax = 0.4999
-    var clearRangeChangeTime = 8 * 60
+    var clearRangeMin = 0.3; ////???????????? abt noise
+    var clearRangeMax = 0.499999;
+    var clearRangeChangeTime = 5 * 60;
 
     ///// volume //////
-    var maxVolum = 0.5
+    var maxVolum = 0.5;
+
+    //// out of control ////
+    var outOfControlTime = [ 8 * 60 , 12 * 60 ]; // !!!!!!!!out of control begin & end
 
     var keypressButtonChange = 20;
     var clearRange = 0.2;
@@ -86,9 +91,18 @@
            
             if ( this.myType == 'main' )
             {
-                console.log("set currentTime to " + (currentTime * 0.001 * mainVideoScale));
-                this.video.attr('src', MainVideoPaths[getTemMainVideoID()]);
-                this.video[0].currentTime = currentTime * 0.001 * mainVideoScale;
+                console.log("[Enter Main] Set currentTime to " + (currentTime * 0.001 * mainVideoScale));
+                if ( !isOutOfControl )
+                {
+                    this.video.attr('src', MainVideoPaths[getTemMainVideoID()]);
+                    var vidTime = currentTime * 0.001 * mainVideoScale;
+                    this.video[0].currentTime = vidTime;
+                }else
+                {
+                    this.video.attr('src', outPath );
+                    this.video[0].currentTime = currentTime * 0.001 - outOfControlTime[0];
+
+                }
             }
             else
             {
@@ -100,7 +114,14 @@
              		path = this.videoList[rand];
              	}
              	
-             	this.video.attr('src' , path);
+                if (path != "")
+                {
+                    var time = path.split('_')[1];
+                    var timeF = parseFloat(time.substring(0,time.length-1));
+                    this.video.attr('src' , path);
+                    console.log("current Time " + (Math.random() * timeF));
+                    this.video[0].currentTime = Math.random() * timeF ;
+                }
              }
 
               console.log("Enter Id " + this.myId + " Type " + this.myType + " show " + this.video.src);
@@ -122,6 +143,7 @@
 
     var videoFrame;
     var vFlicker;
+    var aOutOfControl;
     var buttons;
 
     function getTemMainVideoID()
@@ -149,7 +171,7 @@
         // set up filter effect video
         var flickerPath = video2path(flickerSource);
         var flicker = document.createElement("video");
-        flicker.type = "video/mp4";
+        flicker.type = "mp4";
         flicker.src = flickerPath;
         flicker.loop = true;
         // video.crossOrigin = 'anonymous';
@@ -160,7 +182,6 @@
         videoFrame.appendChild(flicker);
         vFlicker = $("#flicker");
         vFlicker.css("z-index",100);
-
 
         buttons = [];
         for (var i = 0; i < ButtonConstruct.length; i++) {
@@ -188,13 +209,16 @@
                 pl[pl.length]=p;
             }
 
-            for (var j = 0 ; j < ButtonNoisePoint[i].length ; j++)
-            {
-                pl[ButtonNoisePoint[i][j]].myType = "noise";
-            }
-            for (var j = 0 ; j < ButtonNoisePoint[i].length ; j++)
+            // for (var j = 0 ; j < ButtonNoisePoint[i].length ; j++)
+            // {
+            //     pl[ButtonNoisePoint[i][j]].myType = "noise";
+            // }
+            for (var j = 0 ; j < ButtonMainPoint[i].length ; j++)
             {
                 pl[ButtonMainPoint[i][j]].myType = "main";
+                pl[ButtonMainPoint[i][j]].video[0].addEventListener('ended', function(e){
+                    GotoEnd();
+                }, false);
             }
         };
 
@@ -216,8 +240,9 @@
     var tempButton = 0 ;
     var noiseOpacity = 1;
     var tempPoint = null;
-    var currentTime = 0 ;
+    var currentTime = 7 * 60 * 1000 ;
     var lastPoint;
+    var isOutOfControl = 0;
     function update()
     {
         // update noise
@@ -236,7 +261,7 @@
         }else // video found
         {
             noiseOpacity = 1 - getClearness(buttonTempValue[tempButton],buttons[tempButton].pointList);
-            console.log("noise opacity " + noiseOpacity);
+            // console.log("noise opacity " + noiseOpacity);
             if ( tempPoint != p )
             {
                 if ( tempPoint != null )
@@ -261,9 +286,12 @@
 
         // remove videos
 	    for (var i = videoSources.length - 1; i >= 0; i--) {
-	    	if ( videoSources[i][VIDEO_END_TIME] >= currentTime / 1000 
-	    		&& videoSources[i][VIDEO_END_TIME] < currentTime / 1000 + 1 / FPS)
+
+	    	if ( (currentTime / 1000 ) > videoSources[i][VIDEO_END_TIME] ) {
+                // console.log(videoSources[i][VIDEO_END_TIME]);
 	    		removeVideoBySource(videoSources[i]);
+                videoSources[i][VIDEO_END_TIME] = 99999999;
+            }
 	    };
 
 	    // add videos
@@ -273,17 +301,64 @@
 	    // 		importVideoFromSource(videoSources[i]);
 	    // };
         if ( videoSources.length > vSourceIndex)
-        if ( currentTime / 1000 > videoSources[vSourceIndex][VIDEO_START_TIME])
-        {
-            importVideoFromSource(videoSources[vSourceIndex]);
-            vSourceIndex++;
-        }
+            if ( currentTime / 1000 > videoSources[vSourceIndex][VIDEO_START_TIME])
+            {
+                importVideoFromSource(videoSources[vSourceIndex]);
+                videoSources[vSourceIndex][VIDEO_START_TIME] = 9999999;
+                vSourceIndex++;
+            }
        //  console.log(buttonTempValue + " " + tempButton.toString() + " " + noiseOpacity.toString());
         // if (tempPoint != null)
         //     console.log(tempPoint.myId);
 
         // update clear range
         clearRange = clearRangeMin +  ( currentTime / clearRangeChangeTime / 1000 ) * (clearRangeMax - clearRangeMin);
+    
+        //check ending
+        if ( currentTime > 17 * 60 * 1000 )
+            GotoEnd();
+
+        // out of control
+        if ( currentTime * 0.001 > outOfControlTime[0] && currentTime * 0.001 < outOfControlTime[1] )
+        {
+            var last = isOutOfControl;
+            isOutOfControl = 1;
+            console.log(isOutOfControl + " " + last);
+            if ( last != isOutOfControl )
+            {
+                EnterOutOfControl();
+            }
+        }else{
+            var last = isOutOfControl;
+            isOutOfControl = 0;
+            console.log(isOutOfControl + " " + last);
+            if ( last != isOutOfControl )
+            {
+                ExitOutOfControl();
+            }
+        }
+    }
+
+    function EnterOutOfControl()
+    {
+    	socket.send('X');
+        for (var i = buttons[0].pointList.length - 1; i >= 0; i--) {
+           if ( buttons[0].pointList[i].myType == "main" )
+           {
+                buttons[0].pointList[i].EnterPoint();
+           }
+        }
+    }
+
+     function ExitOutOfControl()
+    {
+    	socket.send('Y');
+        for (var i = buttons[0].pointList.length - 1; i >= 0; i--) {
+           if ( buttons[0].pointList[i].myType == "main" )
+           {
+                buttons[0].pointList[i].EnterPoint();
+           }
+        }
     }
 
     function removeVideoBySource(sourceInfo)
@@ -295,13 +370,11 @@
         var point = buttons[Ibtn].pointList[Jscl];
 
         var i = point.videoList.indexOf(path);
+
+        console.log("remove video " + point.myId + " " + path + " " + i);
         if ( i != -1) {
         	point.videoList.splice(i,1);
         }
-
-       	point.videoList.push(path);
-       	console.log("remove video " + point.myId + path);
-
     }
 
     function importVideoFromSource(sourceInfo)
@@ -402,59 +475,105 @@
 
 
     function doKeyPress(e){
-          if (e.keyCode == 'w'.charCodeAt(0) )
-          {
-            if ( buttonTempValue[0] < 1023)
-                buttonTempValue[0] += keypressButtonChange;
-            tempButton = 0;
-          }
+      if (e.keyCode == 'w'.charCodeAt(0) )
+      {
+        if ( buttonTempValue[0] < 1023)
+            buttonTempValue[0] += keypressButtonChange;
+        tempButton = 0;
+      }
 
 
-          if (e.keyCode == 'e'.charCodeAt(0) )
-          {
-            buttonTempValue[1] += keypressButtonChange;
-            if ( maxVolum < 0.99)
-                maxVolum += 0.1;
-            // tempButton = 1;
-          }
+      if (e.keyCode == 'e'.charCodeAt(0) )
+      {
+        buttonTempValue[1] += keypressButtonChange;
+        if ( maxVolum < 0.99)
+            maxVolum += 0.1;
+        // tempButton = 1;
+      }
 
-          if (e.keyCode == 'r'.charCodeAt(0) )
-          {
-            buttonTempValue[2] += keypressButtonChange;
-            // tempButton = 2;
-          }
+      if (e.keyCode == 'r'.charCodeAt(0) )
+      {
+        buttonTempValue[2] += keypressButtonChange;
+        // tempButton = 2;
+      }
 
-          if (e.keyCode == 's'.charCodeAt(0) )
-          {
-            if ( buttonTempValue[0] > 1)    
-                buttonTempValue[0] -= keypressButtonChange;
-            tempButton = 0;
-          }
+      if (e.keyCode == 's'.charCodeAt(0) )
+      {
+        if ( buttonTempValue[0] > 1)    
+            buttonTempValue[0] -= keypressButtonChange;
+        tempButton = 0;
+      }
 
-          if (e.keyCode == 'd'.charCodeAt(0) )
-          {
-            buttonTempValue[1] -= keypressButtonChange;
-            if ( maxVolum > 0.01)
-                maxVolum -= 0.1;
-            // tempButton = 1;
-          }
+      if (e.keyCode == 'd'.charCodeAt(0) )
+      {
+        buttonTempValue[1] -= keypressButtonChange;
+        if ( maxVolum > 0.01)
+            maxVolum -= 0.1;
+        // tempButton = 1;
+      }
 
-          if (e.keyCode == 'f'.charCodeAt(0) )
-          {
-            buttonTempValue[2] -= keypressButtonChange;
-            // tempButton = 2;
-          }
+      if (e.keyCode == 'f'.charCodeAt(0) )
+      {
+        buttonTempValue[2] -= keypressButtonChange;
+        // tempButton = 2;
+      }
 
-          if (e.keyCode == 'k'.charCodeAt(0) )
-          {
-          	if ( clearRange < 0.4 )
-	          	clearRange = 0.499
-	        else 
-	        	clearRange = 0.2
-          }
+      if ( e.keyCode == 'k'.charCodeAt(0) )
+      {
+      	if ( clearRange < 0.4 )
+          	clearRange = 0.499
+        else 
+        	clearRange = 0.2
+      }
 
+      if ( e.keyCode == 'g'.charCodeAt(0)  )
+      {
+        GotoEnd();
+      }
+
+      if (e.keyCode == 'p'.charCodeAt(0) )
+      {
+        if (isPlaying)
+            PauseAll();
+        else
+            PlayAll();
+      }
+
+      if (e.keyCode == 'i'.charCodeAt(0))
+      {
+        console.log("******** [Info] ********");
+        console.log("currentTime " + (currentTime / 1000) );
+        console.log("noiseOpacity " + noiseOpacity);
+        console.log("volume " + maxVolum);
+        if ( tempPoint != null)
+        {
+            console.log("temp point " + tempPoint.myId );
+            console.log("current video " + tempPoint.video[0].src);
+            for (var i = tempPoint.videoList.length - 1; i >= 0; i--) {
+                console.log("video list " + i + " " + tempPoint.videoList[i]);
+            }
+        }
+        console.log("isOutOfControl " + isOutOfControl);
+        console.log("******** [end] ********");
+       
+      }
     }
 
+    function GotoEnd()
+    {
+         window.location.href='ending.html' + '?vol=' + maxVolum;
+    }
+
+    var isPlaying = 1;
+    function PlayAll()
+    {
+        isPlaying = 1;
+    }
+
+    function PauseAll()
+    {
+        isPlaying = 0;
+    }
 
 
     function UpdateButtonValue (btnValue) {
@@ -462,7 +581,7 @@
     }
 
     function UpdateVolumeValue (volValue) {
-       maxVolum = volValue;
+       maxVolum = volValue /1024;
     }
 
     init();

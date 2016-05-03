@@ -4,6 +4,7 @@
             // The socket connection needs two event listeners:
              socket.onopen = openSocket;
              socket.onmessage = showData;
+             socket.send('Y');
           }
 
           function openSocket() {
@@ -20,7 +21,7 @@
               //1st knob - G
               var btnValue = int(resArray[0]);
               UpdateButtonValue(btnValue);
-              var volValue = float(resArray[0] / 1024);
+              var volValue = float(resArray[1]);
               UpdateVolumeValue(volValue);
               //2nd camera - W
               // realityView = int(resArray[1]););
