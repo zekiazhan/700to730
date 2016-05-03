@@ -7,8 +7,8 @@
           }
 
           function openSocket() {
-            text.html("Socket open");
-            socket.send("Hello server");
+            // text.html("Socket open");
+            // socket.send("Hello server");
           }
 
           function showData(result) {
@@ -27,7 +27,7 @@
               // //3rd camera for audio
               // audioView = int(resArray[2]);
               // send a byte to get the Arduino to send new data
-              socket.send('700to730');
+              socket.send('X');
 
               // doKeyDown(pointOfView); //for testing
             }
