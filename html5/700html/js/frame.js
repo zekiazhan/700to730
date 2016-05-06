@@ -16,7 +16,7 @@
     var FOOTAGE_END_TIME = 3;
 
     // var videoSources = [
-    //     ['ME_c',0,0,0,20],
+    //     ['ME_c',0,0,0,20],is
     //     ['ME_c',0,2,0,20],
     //     ['Q',0,3,0,20],
     //     ['2s',0,1,0,15],
@@ -48,7 +48,8 @@
         "../footage/01.mp4",
         "../footage/02.mp4"
     ]
-    var mainVideoScale = 30 / 19;
+    var mainVideoScaleBefore = ( 12 * 60 + 25 ) / ( 8 * 60 );
+    var mainVideoScaleAfter = ( 26 * 60 - 16 * 60 - 55) / (  19 * 60 - 12 * 60 - 30);
 
     var MainVideoFliter =
     [
