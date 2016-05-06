@@ -4,11 +4,12 @@
             // The socket connection needs two event listeners:
              socket.onopen = openSocket;
              socket.onmessage = showData;
+             socket.send('Y');
           }
 
           function openSocket() {
-            text.html("Socket open");
-            socket.send("Hello server");
+            // text.html("Socket open");
+            // socket.send("Hello server");
           }
 
           function showData(result) {
@@ -20,14 +21,14 @@
               //1st knob - G
               var btnValue = int(resArray[0]);
               UpdateButtonValue(btnValue);
-              var volValue = float(resArray[0] / 1024);
+              var volValue = float(resArray[1]);
               UpdateVolumeValue(volValue);
               //2nd camera - W
               // realityView = int(resArray[1]););
               // //3rd camera for audio
               // audioView = int(resArray[2]);
               // send a byte to get the Arduino to send new data
-              socket.send('700to730');
+              // socket.send('700to730');
 
               // doKeyDown(pointOfView); //for testing
             }
