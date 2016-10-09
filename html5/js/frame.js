@@ -32,7 +32,7 @@
     var VIDEO_END_TIME = 4;
 
     // current time
-    var currentTime = 0 * 50 * 1000 ; //start time
+    var currentTime = 0 * 0 * 1000 ; //start time
 
     // the scale of the videos 
     var ButtonConstruct = [
@@ -52,6 +52,7 @@
         "../footage/AK.mp4" ,
     ]
     var outPath = "../footage/OOCDEMO.mp4";
+    var endMusicPath = "../footage/EndingMusic.mp3";
 
     var mainVideoScaleBefore = ( 12 * 60  ) / ( 8 * 50 );
     var mainVideoScaleAfter  = ( 29 * 60 - 17 * 60  ) / ( 18 * 50 - 12 * 50 );
@@ -108,6 +109,10 @@
 
     //// out of control ////
     var outOfControlTime = [ 8 * 50 , 13 * 50]; // !!!!!!!!out of control begin & end
+
+    /// end music ///
+    var endMusicTime = ( 22 * 60 + 50 ) ;
+    var isEndMusic = 0 ;
 
     var keypressButtonChange = 25;
     var clearRange = 0.2;
@@ -282,6 +287,17 @@
         };
 
 
+        // add music
+        {
+            var music = document.createElement("audio");
+            music.src = endMusicPath;
+            music.type = "mp3"
+            music.id = 'end-music';
+            music.autoplay = false;
+            videoFrame.appendChild(music);
+        }
+
+
         // start update the program
         setInterval(function() {
             update();
@@ -423,6 +439,12 @@
             {
                 ExitOutOfControl();
             }
+        }
+
+        if ( currentTime * 0.001 > endMusicTime && isEndMusic == 0 )
+        {
+            isEndMusic = 1;
+            $('#end-music')[0].play();
         }
 
         // update the state of the controller
@@ -670,7 +692,7 @@
 
     function GotoEnd()
     {
-         window.location.href='ending.html' + '?vol=' + maxVolum;
+         // window.location.href='ending.html' + '?vol=' + maxVolum;
     }
 
     var isPlaying = 1;
